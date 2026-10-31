@@ -1,2 +1,2 @@
 # Care-Well-Hospital-Project
-solcing the problem statement in the hackaton
+solving the problem statement in the hackaton
