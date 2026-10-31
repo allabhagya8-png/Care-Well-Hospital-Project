@@ -7,8 +7,13 @@ select count(*)from carewell_db;
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
+-- ============================================================================
+-- CareWell Healthcare Analytics Hackathon - Complete SQL Deliverable
+-- Dataset: carewell_cleaned
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
 -- Query 1: Monthly Admission Trends & Peak Identification
--- Purpose: Track total admissions by month to identify seasonal monsoon surges.
 -- ----------------------------------------------------------------------------
 SELECT 
     admission_month,
@@ -22,7 +27,6 @@ ORDER BY admission_month;
 
 -- ----------------------------------------------------------------------------
 -- Query 2: Bed Occupancy Analysis by Hospital & Department
--- Purpose: Calculate average length of stay and flag departments exceeding 85% capacity.
 -- ----------------------------------------------------------------------------
 SELECT 
     hospital,
@@ -30,7 +34,6 @@ SELECT
     SUM(length_of_stay) AS total_patient_days,
     ROUND(AVG(length_of_stay), 2) AS avg_length_of_stay,
     MAX(total_beds) AS total_beds_allocated,
-    -- Occupancy calculation based on 30-day monthly capacity per bed
     ROUND((SUM(length_of_stay) / (MAX(total_beds) * 30.0)) * 100, 2) AS occupancy_percentage,
     CASE 
         WHEN (SUM(length_of_stay) / (MAX(total_beds) * 30.0)) * 100 > 85.0 THEN 'HIGH OVERLOAD (>85%)'
@@ -43,7 +46,6 @@ ORDER BY occupancy_percentage DESC;
 
 -- ----------------------------------------------------------------------------
 -- Query 3: 30-Day Readmission Rates by Diagnosis Category
--- Purpose: Identify high-risk disease categories driving patient readmissions.
 -- ----------------------------------------------------------------------------
 SELECT 
     diagnosis_category,
@@ -57,7 +59,6 @@ ORDER BY readmission_rate_pct DESC;
 
 -- ----------------------------------------------------------------------------
 -- Query 4: Claim Rejections & Financial Revenue Leakage by Payment Type
--- Purpose: Quantify unrecovered revenue and rejection rates across insurance and govt schemes.
 -- ----------------------------------------------------------------------------
 SELECT 
     payment_type,
@@ -73,8 +74,7 @@ ORDER BY total_revenue_lost_inr DESC;
 
 
 -- ----------------------------------------------------------------------------
--- Query 5: High-Risk Patient Profiling & Emergency Stay Duration
--- Purpose: Analyze average bill amounts and patient length of stay by admission type and age group.
+-- Query 5: High-Risk Patient Profiling & Stay Duration
 -- ----------------------------------------------------------------------------
 SELECT 
     admission_type,
@@ -86,3 +86,30 @@ SELECT
 FROM carewell_cleaned
 GROUP BY admission_type, age_group
 ORDER BY admission_type, avg_bill_amount_inr DESC;
+
+
+-- ----------------------------------------------------------------------------
+-- Query 6: Emergency vs. Planned Admissions Comparison (Cost & Stay)
+-- ----------------------------------------------------------------------------
+SELECT 
+    admission_type,
+    COUNT(admission_id) AS total_admissions,
+    ROUND(AVG(length_of_stay), 2) AS avg_los_days,
+    ROUND(AVG(bill_amount), 2) AS avg_bill_amount_inr,
+    ROUND(SUM(revenue_lost), 2) AS total_revenue_lost_inr
+FROM carewell_cleaned
+GROUP BY admission_type;
+
+
+-- ----------------------------------------------------------------------------
+-- Query 7: Seasonal Patterns & Monsoon Fever Cases Analysis
+-- ----------------------------------------------------------------------------
+SELECT 
+    admission_month,
+    diagnosis_category,
+    COUNT(admission_id) AS total_admissions,
+    SUM(length_of_stay) AS total_patient_days
+FROM carewell_cleaned
+WHERE admission_month IN ('2025-07', '2025-08', '2025-09')
+GROUP BY admission_month, diagnosis_category
+ORDER BY total_admissions DESC;
