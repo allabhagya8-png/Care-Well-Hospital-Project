@@ -1,12 +1,7 @@
 use carewell_db;
 select count(*)from carewell_db;
 
--- ============================================================================
--- CareWell Healthcare Analytics Hackathon - SQL Queries Deliverable
--- Dataset: carewell_cleaned
--- ============================================================================
-
--- ----------------------------------------------------------------------------
+--
 -- ============================================================================
 -- CareWell Healthcare Analytics Hackathon - Complete SQL Deliverable
 -- Dataset: carewell_cleaned
